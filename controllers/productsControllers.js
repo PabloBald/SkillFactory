@@ -1,12 +1,56 @@
-const Products = require('../models/Products')
+const Products = require("../models/Products");
 
-const getAll = async (req,res)=>{
-    const allProducts = await Products.getProducts()
-     res.json(allProducts); 
-}
+const getAllProducts = async (req, res) => {
+	const { limit } = req.query;
+	let products = await Products.getProducts();
+
+	if (limit) {
+		products = products.filter((_product, i) => i < limit);
+	}
+	res.status(200).json(products);
+};
+const getProductById = async (req, res) => {
+	let product = await Products.getById(req.params.id);
+	res.status(200).json(product);
+};
+const getAllCategories = async (_req, res) => {
+	const categories = await Products.getCategories();
+
+	Promise.all(
+		categories.map(async (category) => {
+			const products = await Products.getByCategory(category);
+			return { category, products };
+		})
+	).then((data) => res.status(200).json(data));
+};
+const getProductsByCategory = async (req, res) => {
+	const products = await Products.getByCategory(req.params.category);
+	res.status(200).json(products);
+};
+const getPrices = async (req, res) => {
+	const { order } = req.query;
+	const prices = await Products.getProductsPrices();
+
+	if (order) {
+		if (order.toUpperCase().localeCompare("ASC"))
+			prices.sort((a, b) => b.price - a.price);
+		if (order.toUpperCase().localeCompare("DESC"))
+			prices.sort((a, b) => a.price - b.price);
+	}
+
+	res.status(200).json(prices);
+};
+const getMostExpensives = async (_req, res) => {
+	res.status(200).json(await Products.getExpensivestProducts());
+};
 
 const productsControllers = {
-    getAll,
-}
+	getAllProducts,
+	getProductById,
+	getAllCategories,
+	getProductsByCategory,
+	getPrices,
+	getMostExpensives,
+};
 
 module.exports = productsControllers;
