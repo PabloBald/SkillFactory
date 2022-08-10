@@ -16,12 +16,12 @@ const getProductById = async (req, res) => {
 const getAllCategories = async (_req, res) => {
 	const categories = await Products.getCategories();
 
-	Promise.all(
-		categories.map(async (category) => {
+	res.status(200).json(await Promise.all(
+		categories.map(async(category) => {
 			const products = await Products.getByCategory(category);
 			return { category, products };
 		})
-	).then((data) => res.status(200).json(data));
+	));
 };
 const getProductsByCategory = async (req, res) => {
 	const products = await Products.getByCategory(req.params.category);

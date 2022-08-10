@@ -3,7 +3,9 @@ const app = express();
 const port = process.env.PORT || 3000
 const productsRoutes = require('./routes/productsRoutes');
 const errorHandler = require('./middlewares/errorHandler');
+const dateLogger = require('./middlewares/date')
 
+app.use('/',dateLogger)
 app.use('/products',productsRoutes);
 app.use('/',errorHandler.notFound);
 
