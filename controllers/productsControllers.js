@@ -29,7 +29,14 @@ const getProductsByCategory = async (req, res) => {
 };
 const getPrices = async (req, res) => {
 	const { order } = req.query;
-	const prices = await Products.getProductsPrices();
+	const products = await Products.getProducts();
+	const prices = products.map((product) => {
+		return {
+			id: product.id,
+			title: product.title,
+			price: product.price,
+		};
+	});
 
 	if (order) {
 		if (order.toUpperCase().localeCompare("ASC"))
@@ -37,11 +44,19 @@ const getPrices = async (req, res) => {
 		if (order.toUpperCase().localeCompare("DESC"))
 			prices.sort((a, b) => a.price - b.price);
 	}
-
 	res.status(200).json(prices);
 };
 const getMostExpensives = async (_req, res) => {
-	res.status(200).json(await Products.getExpensivestProducts());
+	const categories = await Products.getCategories();
+	const expensives = categories.map(async (category) => {
+		const product = Products.getByCategory(category).then((data) => {
+			data.sort((a, b) => b.price - a.price);
+			return data[0];
+		});
+		return product;
+	});
+
+	res.status(200).json(await Promise.all(expensives));
 };
 
 const productsControllers = {
