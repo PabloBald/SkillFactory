@@ -2,9 +2,9 @@
   "name": "entregable-1-avalith",
   "version": "1.0.0",
   "description": "Primer entregable SkillFactory 2022 ",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "author": "Pablo Baldor",
   "license": "ISC",
